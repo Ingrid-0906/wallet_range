@@ -20,6 +20,7 @@ if __name__ == "__main__":
     
     # COLLECCTING DATA
     precos = gen_base.GenerateBase.get_yf_data(tickers=tickers, frame=frame)
+    print(precos[:3])
     _, _, e_r, _, mat_cov = gen_base.GenerateBase.calculate_stats(precos)
     
     # BUILDING THE SCENARIOS

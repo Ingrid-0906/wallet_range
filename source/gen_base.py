@@ -56,11 +56,11 @@ class GenerateBase:
             - retornos, rotulo, e_r, vol, mat_cov
         """
         
-        retornos = precos.pct_change().dropna()
+        retornos = precos.pct_change().fillna(0)
         rotulo= retornos.columns.to_list()
-        e_r=retornos.mean()
-        vol=retornos.std()
-        mat_cov=retornos.cov()
+        e_r=retornos.mean().replace([np.inf, -np.inf], 0.000)
+        vol=retornos.std().fillna(0)
+        mat_cov=retornos.cov().fillna(0)
         return retornos, rotulo, e_r, vol, mat_cov
   
 
@@ -81,7 +81,7 @@ class GenerateBase:
         p_vol = []
         p_pesos = []
 
-        for _ in range(3000):
+        for _ in range(5000):
             pesos = np.random.random(n_ativos)
             pesos = pesos / np.sum(pesos)
             p_pesos.append(pesos)
@@ -110,11 +110,14 @@ class GenerateBase:
         
         p_ret = []
         p_vol = []
-
-        returns = np.dot(pesos, e_r)
-        p_ret.append(returns)
+        
+        retorns = np.dot(pesos, e_r)
+        p_ret.append(retorns)
 
         var = mat_cov.mul(pesos, axis=0).mul(pesos, axis=1).sum().sum()
         dp = np.sqrt(var)
         p_vol.append(dp)
+        
+        p_ret = np.array(p_ret)
+        p_vol = np.array(p_vol)
         return p_ret, p_vol
